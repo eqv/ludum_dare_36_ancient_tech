@@ -6,7 +6,7 @@ class PreloadState extends Phaser.State {
 
 	create() {
     console.log("preload created");
-		this.state.start('MainMenuState');
+		this.state.start('RaceState');
 	}
 
 }

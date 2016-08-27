@@ -1,37 +1,16 @@
 class TrackInfo {
 
 	constructor(game, track) {
+    this.game = game;
+    this._track = track;
 
-		this._speed = 125; //ms
-		this._colorIndex = 0;
-		this._colors = ['#ee4035', '#f37736', '#fdf498', '#7bc043', '#0392cf'];
+    let bmd = game.make.bitmapData(800, 600);
+    bmd.draw(track, -200, -100);
+    bmd.update();
+    bmd.addToWorld();
 
-		this.colorize();
-		this.startTimer();
-
-		this.game.stage.addChild(this);
-
+		//this.game.stage.addChild(this);
 	}
-
-	startTimer() {
-		this.game.time.events.loop(this._speed, this.colorize, this).timer.start();
-	}
-
-	colorize() {
-
-		for (let i = 0; i < this.text.length; i++) {
-
-			if (this._colorIndex === this._colors.length) {
-				this._colorIndex = 0;
-			}
-
-			this.addColor(this._colors[this._colorIndex], i);
-			this._colorIndex++;
-
-		}
-
-	}
-
 }
 
 export default TrackInfo;
