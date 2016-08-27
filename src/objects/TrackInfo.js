@@ -8,6 +8,7 @@ class TrackInfo {
     bmd.draw(track, -200, -100);
     bmd.update();
     bmd.addToWorld();
+    this.game.add.sprite(game.world.randomX, game.world.randomY, 'arrows');
 
 		//this.game.stage.addChild(this);
 	}
