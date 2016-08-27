@@ -1,7 +1,7 @@
 class PreloadState extends Phaser.State {
 
   preload() {
-    console.log("preload");
+    this.game.load.image('track1', 'pa_track1.png');
   }
 
 	create() {
