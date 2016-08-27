@@ -24,6 +24,7 @@ class VectorAim extends Phaser.Graphics {
 
         var world_object_coords = new Phaser.Point(this.x, this.y);
         var world_line_end = new Phaser.Point(0,0);
+        //if Phaser.Point.distance(world_object_coords, this.world_object_coords
 
         this.lineStyle(1, 0xffff00);
 
