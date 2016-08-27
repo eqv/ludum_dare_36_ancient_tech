@@ -1,7 +1,7 @@
 import RainbowText from 'objects/RainbowText';
 import VectorAim from 'objects/VectorAim';
 
-class GameState extends Phaser.State {
+class FnordState extends Phaser.State {
 
 	create() {
 		let center = { x: this.game.world.centerX, y: this.game.world.centerY }
@@ -14,4 +14,4 @@ class GameState extends Phaser.State {
 
 }
 
-export default GameState;
+export default FnordState;
