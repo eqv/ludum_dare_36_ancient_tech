@@ -5,7 +5,7 @@ import PreloadState from 'states/PreloadState';
 class CGame extends Phaser.Game {
 
 	constructor() {
-		super(500, 500, Phaser.AUTO, 'content', null);
+		super(800, 600, Phaser.AUTO, 'content', null);
 		this.state.add('PreloadState', PreloadState, false);
 		this.state.add('MainMenuState', FnordState, false);
 		this.state.add('RaceState', RaceState, false);
