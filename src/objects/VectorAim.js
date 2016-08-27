@@ -57,7 +57,7 @@ class VectorAim extends Phaser.Graphics {
 
         // draw stuff at our current position
         this.beginFill(0xffffff, 0.5);
-        this.drawCircle(0, 0, 50);
+        this.drawCircle(0, 0, 20);
         this.endFill();
 
         // the path up to here
