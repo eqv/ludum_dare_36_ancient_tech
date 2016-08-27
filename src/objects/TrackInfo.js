@@ -19,6 +19,10 @@ class TrackInfo {
     console.log(this.track_points.size);
 	}
 
+  snap_to_track(world_point){ 
+    return this.track_to_world( this.world_to_track( world_point ) );
+  }
+
   track_to_world(point){
     let pt = this.matrix_track_to_world.apply(point);
     pt.x += this._track_size.x/2;
@@ -36,13 +40,13 @@ class TrackInfo {
 
   gather_viable_points(){
     let points = new Set([]);
-    for (let i =0; i <= this._track_size.x; i++) {
-      for (let j =0; j <this._track_size.y; j++) {
-        let pt = this.track_to_world( this.world_to_track( new Phaser.Point(i,j) ) );
-        if(pt.x == i && pt.y == j){
-          let px = this._track_data.getPixelRGB(i,j);
+    for (let x =0; x <= this._track_size.x; x++) {
+      for (let y =0; y <= this._track_size.y; y++) {
+        let pt = this.snap_to_track(new Phaser.Point(x,y))
+        if(pt.x == x && pt.y == y){
+          let px = this._track_data.getPixelRGB(x,y);
           if(px.a > 200){
-              points.add({x: i, y: j});
+              points.add({x: x, y: y});
           }
         }
       }
