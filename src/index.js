@@ -1,20 +1,17 @@
-import GameState from 'states/GameState';
-import TrackState from 'states/TrackState';
+import FnordState from 'states/FnordState';
+import RaceState from 'states/RaceState';
+import PreloadState from 'states/PreloadState';
 
-function preload(){
-  alert(1);
-}
-
-class Game extends Phaser.Game {
-
+class CGame extends Phaser.Game {
 
 	constructor() {
-		super(500, 500, Phaser.AUTO, 'content', null, {preload: preload});
-		this.state.add('TrackState', TrackState, false);
-		this.state.start('TrackState');
+		super(500, 500, Phaser.AUTO, 'content', null);
+		this.state.add('PreloadState', PreloadState, false);
+		this.state.add('MainMenuState', FnordState, false);
+		this.state.add('RaceState', RaceState, false);
+		this.state.start('PreloadState');
 	}
-
 
 }
 
-new Game();
+new CGame();
