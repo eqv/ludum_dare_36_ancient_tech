@@ -9,7 +9,6 @@ class FnordState extends Phaser.State {
 		//let text = new RainbowText(this.game, center.x, center.y, "- the game -\n\nUncontrollable\nHeavenly\nSpeedboats!");
 		//text.anchor.set(0.5);
 
-		let aim = new VectorAim(this.game, center.x, center.y);
 	}
 
 }
