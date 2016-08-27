@@ -8,7 +8,7 @@ class TrackInfo {
     this._track_data.draw(track, 0, 0);
     this._track_data.update();
     this._track_data.addToWorld();
-    let track_points = 60;
+    let track_points = 20;
     let point_horizontal_dist = this._track_size.x/track_points;
     let point_vertical_dist = point_horizontal_dist *0.5 * (0.83);
     let base_1 = {x: point_horizontal_dist/2, y: point_vertical_dist/2};

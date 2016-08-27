@@ -32,7 +32,7 @@ class RaceState extends Phaser.State {
     }
 
     render(){
-      //this.trackinfo.debug_render();
+      this.trackinfo.debug_render();
     }
 
 }
