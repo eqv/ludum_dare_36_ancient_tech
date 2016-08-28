@@ -24,24 +24,25 @@ class RaceState extends Phaser.State {
         this.cursors = this.game.input.keyboard.createCursorKeys();
         this.game.world.setBounds(0, 0, 2000, 2000);
         this.players = [];
+
         let start = this.find_random_starting_point();
         let racer = new Racer(this.game, start.x, start.y, this.trackinfo);
         let aim = new VectorAim(this.game, racer);
         this.players.push(aim);
 
         if (this.pvp) {
-            start = this.find_random_starting_point();
-            racer = new Racer(this.game, start.x, start.y, this.trackinfo);
-            aim = new VectorAim(this.game, racer);
-            aim.alive = false;
-            this.players.push(aim);
+          start = this.find_random_starting_point();
+          racer = new Racer(this.game, start.x, start.y, this.trackinfo);
+          aim = new VectorAim(this.game, racer);
+          aim.alive = false;
+          this.players.push(aim);
         }
         else {
-        let airacer = new Racer(this.game, start.x, start.y, this.trackinfo);
-        this.ai = new MonteCarloAI(airacer,this.trackinfo);
-            this.ai.decide(100,5);
-            this.ai.alive = false;
-            this.players.push(this.ai);
+          let airacer = new Racer(this.game, start.x, start.y, this.trackinfo);
+          this.ai = new MonteCarloAI(this.game, airacer,this.trackinfo);
+          this.ai.decide(100,5);
+          this.ai.alive = false;
+          this.players.push(this.ai);
         }
     }
 
@@ -66,6 +67,7 @@ class RaceState extends Phaser.State {
             this.players[0].alive = true;
         }
     }
+
     update() {
         if (this.cursors.up.isDown)
         {
