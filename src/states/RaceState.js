@@ -12,6 +12,9 @@ let tracks = [
 ]
 
 class RaceState extends Phaser.State {
+    init(pvp) {
+        this.pvp = pvp
+    }
 
     create() {
         this.cursors = this.game.input.keyboard.createCursorKeys();
@@ -20,17 +23,48 @@ class RaceState extends Phaser.State {
         this.trackinfo = new TrackInfoExtractor(this.game, tracks[0]);
         this.cursors = this.game.input.keyboard.createCursorKeys();
         this.game.world.setBounds(0, 0, 2000, 2000);
+        this.players = [];
+
         let start = this.find_random_starting_point();
         let racer = new Racer(this.game, start.x, start.y, this.trackinfo);
         let aim = new VectorAim(this.game, racer);
+        this.players.push(aim);
 
-        let airacer = new Racer(this.game, start.x, start.y, this.trackinfo);
-        let ai = new MonteCarloAI(airacer,this.trackinfo);
+        if (this.pvp) {
+            start = this.find_random_starting_point();
+            racer = new Racer(this.game, start.x, start.y, this.trackinfo);
+            aim = new VectorAim(this.game, racer);
+            aim.alive = false;
+            this.players.push(aim);
+        }
+        else {
+            let airacer = new Racer(this.game, start.x, start.y, this.trackinfo);
+            let ai = new MonteCarloAI(airacer,this.trackinfo);
+            ai.alive = false;
+            this.players.push(ai);
+        }
     }
 
     find_random_starting_point() {
         let idx = Math.floor(Math.random() * this.trackinfo.finish_points.length);
         return this.trackinfo.finish_points[idx];
+    }
+
+    next_player() {
+        let activate = false;
+        for (let p of this.players) {
+            if (p.alive) {
+                p.alive = false;
+                activate = true;
+            }
+            else if (activate) {
+                p.alive = true;
+                activate = false;
+            }
+        }
+        if (activate) {
+            this.players[0].alive = true;
+        }
     }
 
     update() {
@@ -57,7 +91,6 @@ class RaceState extends Phaser.State {
     render(){
       this.trackinfo.debug_render();
     }
-
 }
 
 export default RaceState;
