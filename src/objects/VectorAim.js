@@ -36,6 +36,8 @@ class VectorAim extends Phaser.Graphics {
             this.x = this.racer.x;
             this.y = this.racer.y;
             this.game.state.states.RaceState.next_player();
+            this.clear();
+            return
         } else {
             this.formerMouseDown = pointer.leftButton.isDown
         }
