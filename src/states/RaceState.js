@@ -1,4 +1,4 @@
-import Player from 'objects/Player';
+import Racer from 'objects/Racer';
 import TrackInfoExtractor from 'objects/TrackInfoExtractor';
 import VectorAim from 'objects/VectorAim';
 
@@ -19,8 +19,8 @@ class RaceState extends Phaser.State {
         this.trackinfo = new TrackInfoExtractor(this.game, tracks[0]);
         this.cursors = this.game.input.keyboard.createCursorKeys();
         this.game.world.setBounds(0, 0, 2000, 2000);
-        let player = new Player(this.trackinfo, new Phaser.Point(100, 100));
-        let aim = new VectorAim(this.game, player);
+        let racer = new Racer(this.game, 100, 100, this.trackinfo);
+        let aim = new VectorAim(this.game, racer);
     }
 
     update() {

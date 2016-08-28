@@ -1,8 +1,9 @@
-class Player {
-    constructor(trackinfo, pos) {
+class Racer extends Phaser.Graphics {
+    constructor(game, x, y, trackinfo) {
+        super(game, x, y);
+
         this.trackinfo = trackinfo;
 
-        this.pos          = pos;
         this.velocity     = new Phaser.Point(0, 0);
         this.acceleration = new Phaser.Point(0, 0);
 
@@ -10,6 +11,9 @@ class Player {
         this.past_checkpoints   = [];
 
         this.max_acceleration = 25;
+
+        this.render();
+        this.game.world.add(this);
     }
 
     set_acceleration(acceleration) {
@@ -21,11 +25,12 @@ class Player {
     }
 
     move() {
-        let prev_pos = new Phaser.Point(this.pos.x, this.pos.y);
+        let prev_pos = new Phaser.Point(this.x, this.y);
         this.previous_positions.push(prev_pos);
 
         this.velocity.add(this.acceleration.x, this.acceleration.y);
-        this.pos.add(this.velocity.x, this.velocity.y);
+        this.x += this.velocity.x;
+        this.y += this.velocity.y;
 
         let cur_pos = new Phaser.Point(prev_pos.x, prev_pos.y);
         let mag = this.velocity.getMagnitude();
@@ -55,8 +60,8 @@ class Player {
             if (!this.trackinfo.is_on_track(pixel) && this.past_checkpoints.length > 0) {
                 let last_cp = this.past_checkpoints[this.past_checkpoints.length - 1];
                 this.previous_positions = this.previous_positions.slice(0, last_cp[1]);
-                this.pos.x = last_cp[0].x;
-                this.pos.y = last_cp[0].y;
+                this.x = last_cp[0].x;
+                this.y = last_cp[0].y;
                 this.velocity.x = 0.0;
                 this.velocity.y = 0.0;
                 glitched = true;
@@ -67,6 +72,43 @@ class Player {
             this.past_checkpoints.push(new_checkpoint);
         }
     }
+
+    update() {
+        this.render();
+    }
+
+    render() {
+        this.clear();
+
+        // draw stuff at our current position
+        this.beginFill(0xffffff, 0.5);
+        this.drawCircle(0, 0, 20);
+        this.endFill();
+
+        // the path up to here
+        this.lineStyle(2, 0xffffff);
+        if (this.previous_positions.length >= 1) {
+            this.moveTo(0, 0);
+
+            // paint line path
+            for (var i = this.previous_positions.length; i > 0; i--) {
+                var point_x = this.previous_positions[i-1].x-this.x;
+                var point_y = this.previous_positions[i-1].y-this.y;
+
+                this.lineTo(point_x, point_y);
+            }
+
+            // paint points on the path
+            for (var i = this.previous_positions.length; i > 0; i--) {
+                var point_x = this.previous_positions[i-1].x-this.x;
+                var point_y = this.previous_positions[i-1].y-this.y;
+
+                this.beginFill(0x00ff00);
+                this.drawRect(point_x-2, point_y-2, 4, 4);
+                this.endFill();
+            }
+        }
+    }
 }
 
-export default Player;
+export default Racer;
