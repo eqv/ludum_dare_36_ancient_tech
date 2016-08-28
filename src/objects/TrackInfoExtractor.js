@@ -1,3 +1,11 @@
+class CheckpointInfo{
+  constructor(id){
+    this.id = id
+    this.dist = Infinity
+    this.points = new Set([])
+  }
+}
+
 class PointInfo {
   constructor(x,y){
     this.on_track = false;
@@ -5,7 +13,7 @@ class PointInfo {
     this.checkpoint = undefined;
     this.x = x;
     this.y = y;
-    this.score = Infinity;
+    this.dist = Infinity;
   }
 
   key(){
@@ -23,7 +31,8 @@ class TrackInfoExtractor {
     this.get_matrix();
     this.gather_viable_points();
     this.gather_checkpoints();
-    this.gather_point_scores();
+    this.gather_point_dists();
+    this.gather_checkpoint_dists();
     this.add_debug_map();
   }
 
@@ -76,20 +85,38 @@ class TrackInfoExtractor {
 
   gather_checkpoints(){
     this.checkpoint_numbers =new Set([]);
+    this.checkpoints_to_info = new Map([]);
     for (let [key, info] of this.points.entries()) {
       if(info.checkpoint){
         this.checkpoint_numbers.add(info.checkpoint);
+        if(!this.checkpoints_to_info.has(info.checkpoint)){
+          this.checkpoints_to_info.set(info.checkpoint, new CheckpointInfo(info.checkpoint));
+        }
+        let ckinf = this.checkpoints_to_info.get(info.checkpoint);
+        ckinf.points.add(info);
       }
     }
   }
 
-  gather_point_scores(){
+  gather_checkpoint_dists(){
+    for(let [id, info] of this.checkpoints_to_info.entries()){
+      for(let point of info.points.values()){
+        if(info.dist > point.dist){
+          info.dist = point.dist;
+        }
+      }
+    }
+    this.checkpoints = [...this.checkpoints_to_info.values()].sort((a,b) => a.dist-b.dist);
+  }
+
+
+  gather_point_dists(){
     let final_checkpoint = Math.max(...this.checkpoint_numbers);
     let closed_points = new Set([]);
     let open_points = new Set([...this.points.values()].filter(i =>i.checkpoint == final_checkpoint));
     let offsets = [[-1,-1], [-1,0], [-1,1],   [0,-1],[0,1],  [1,-1], [1,0], [1,1]];
 
-    for(let info of open_points){info.score = 5;}
+    for(let info of open_points){info.dist = 5;}
 
     while(open_points.size > 0){
       let this_info = open_points.values().next().value;
@@ -106,9 +133,9 @@ class TrackInfoExtractor {
         if( !closed_points.has(neighbor_info) ){
            open_points.add(neighbor_info);
         }
-        let dist = Math.sqrt(x*x+y*y)+this_info.score;
-        if(neighbor_info.score > dist){
-          neighbor_info.score = dist;
+        let dist = Math.sqrt(x*x+y*y)+this_info.dist;
+        if(neighbor_info.dist > dist){
+          neighbor_info.dist = dist;
         }
       }
     }
@@ -161,7 +188,7 @@ class TrackInfoExtractor {
       circ.x = point.x;
       circ.y = point.y;
       circ.radius = 1; 
-      if(info) circ.radius = info.score/50
+      if(info) circ.radius = info.dist/50
       this.game.debug.geom(circ);
     }
 
