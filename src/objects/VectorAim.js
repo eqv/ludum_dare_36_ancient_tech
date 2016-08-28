@@ -1,6 +1,6 @@
 class VectorAim extends Phaser.Graphics {
-	constructor(game, x, y) {
-		super(game, x, y);
+    constructor(game, x, y) {
+        super(game, x, y);
 
         this.previous_positions = [];
         this.velocity = new Phaser.Point(0, 0);
@@ -16,8 +16,8 @@ class VectorAim extends Phaser.Graphics {
 
         //this.fixedToCamera = false;
         this.render();
-		this.game.world.add(this);
-	}
+        this.game.world.add(this);
+    }
 
     update() {
         var pointer = this.game.input.mousePointer; //activePointer;
@@ -30,7 +30,6 @@ class VectorAim extends Phaser.Graphics {
         if (mag > this.max_acceleration) {
             this.velocity_change.setMagnitude(this.max_acceleration);
         }
-            
 
         //TODO: this method sucks. It's not always registered :(
         if (!pointer.leftButton.isDown && this.formerMouseDown) {

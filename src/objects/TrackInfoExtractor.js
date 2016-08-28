@@ -20,8 +20,8 @@ class TrackInfoExtractor {
   get_map_data(name){
     let map_image = this.game.cache.getImage(name);
 
-    this._track_size= {x: map_image.width, y: map_image.height};
-    this._map_data= this.game.make.bitmapData(this._track_size.x, this._track_size.y);
+    this._track_size = {x: map_image.width, y: map_image.height};
+    this._map_data = this.game.make.bitmapData(this._track_size.x, this._track_size.y);
     this._map_data.draw(name, 0, 0);
     this._map_data.update();
   }
@@ -36,8 +36,8 @@ class TrackInfoExtractor {
 
   gather_viable_points(){
     this.points = new Map([]);
-    for (let x =0; x <= this._track_size.x; x++) {
-      for (let y =0; y <= this._track_size.y; y++) {
+    for (let x = 0; x <= this._track_size.x; x++) {
+      for (let y = 0; y <= this._track_size.y; y++) {
         let px = this.get_map(x,y);
         let pt = this.snap_to_track(new Phaser.Point(x,y))
         if(!this.is_on_track(this.get_map(pt.x, pt.y))){continue;}
