@@ -144,7 +144,7 @@ class TrackInfoExtractor {
   gather_finish_points() {
     this.finish_points = []
     for (let [key, info] of this.points.entries()) {
-      if(info.on_finish) {
+      if(info.on_finish && !info.checkpoint) {
         this.finish_points.push(info);
       }
     }

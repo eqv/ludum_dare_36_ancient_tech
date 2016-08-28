@@ -2,6 +2,7 @@ class RacerPhysics {
   constructor(x,y, racer, trackinfo){
         this.x = x;
         this.y = y;
+        this.lap_count = 0;
         this.racer = racer
         this.trackinfo = trackinfo;
         this.velocity     = new Phaser.Point(0, 0);
@@ -9,6 +10,8 @@ class RacerPhysics {
         this.max_acceleration = 25;
         this.last_checkpoint    = new Phaser.Point(x, y);
         this.last_checkpoint_id = null;
+        this.last_checkpoint_lap_count = 0;
+        this.allow_new_lap = false;
   }
 
   set_acceleration(acceleration) {
@@ -33,6 +36,8 @@ class RacerPhysics {
       let i;
       let new_checkpoint = null;
       let new_checkpoint_id = null;
+      let new_lap_count = this.lap_count;
+      let new_allow_new_lap = this.allow_new_lap;
       let glitched = false;
       for (i = 0; i <= mag; i++) {
           if (i > mag) {
@@ -43,7 +48,7 @@ class RacerPhysics {
               cur_pos.add(step.x, step.y);
           }
 
-          let pixel = this.trackinfo.get_map(Math.round(cur_pos.x), Math.round(cur_pos.y));
+          let pixel = this.trackinfo.get_map(cur_pos.x, cur_pos.y);
           
           // check if we went past a checkpoint
           if (new_checkpoint == null) {
@@ -65,12 +70,17 @@ class RacerPhysics {
                       else if (is_checkpoint != this.trackinfo.checkpoints[0].id) {
                           glitched = true;
                       }
+
+                      // we need to pass through the first checkpoint before we can finish a new lap
+                      if (is_checkpoint == this.trackinfo.checkpoints[0].id) {
+                          new_allow_new_lap = true;
+                      }
                   }
                   if (!glitched) {
-                  new_checkpoint = new Phaser.Point(cur_pos.x, cur_pos.y);
-                  new_checkpoint_id = is_checkpoint;
+                      new_checkpoint = new Phaser.Point(cur_pos.x, cur_pos.y);
+                      new_checkpoint_id = is_checkpoint;
+                  }
               }
-          }
           }
 
           // check for glitching
@@ -86,17 +96,31 @@ class RacerPhysics {
               this.y = this.last_checkpoint.y;
               this.velocity.x = 0.0;
               this.velocity.y = 0.0;
+              this.lap_count = this.last_checkpoint_lap_count;
               glitched = true;
               break;
           }
+
+          if (new_lap_count == this.lap_count && this.allow_new_lap && this.trackinfo.is_on_finish_line(pixel)) {
+              let last_checkpoint_id = this.trackinfo.checkpoints[this.trackinfo.checkpoints.length - 1].id;
+              if (this.last_checkpoint_id ==  last_checkpoint_id || new_checkpoint_id == last_checkpoint_id) {
+                  new_lap_count = this.lap_count + 1;
+                  new_allow_new_lap = false;
+              }
+          }
       }
-      if (!glitched && new_checkpoint != null) {
-          this.last_checkpoint    = new_checkpoint;
-          this.last_checkpoint_id = new_checkpoint_id;
+      if (!glitched) {
+          if (new_checkpoint != null) {
+              this.last_checkpoint    = new_checkpoint;
+              this.last_checkpoint_id = new_checkpoint_id;
+              this.last_checkpoint_lap_count = this.lap_count;
+          }
+          this.lap_count = new_lap_count;
+          this.allow_new_lap = new_allow_new_lap;
       }
   }
 
-  fork(){
+  fork() {
     let res = new RacerPhysics(this.x, this.y, null, this.trackinfo)
     res.velocity = this.velocity.clone();
     res.acceleration = this.acceleration.clone();

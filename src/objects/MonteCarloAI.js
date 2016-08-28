@@ -1,8 +1,9 @@
 class MonteCarloAI {
 
-  constructor(racer, trackinfo){
+  constructor(racer, trackinfo, name){
     this.racer = racer
     this.trackinfo = trackinfo
+    this.name = name;
   }
 
   sample_accel(phys){

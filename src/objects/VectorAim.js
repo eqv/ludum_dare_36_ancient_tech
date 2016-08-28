@@ -1,8 +1,9 @@
 class VectorAim extends Phaser.Graphics {
-    constructor(game, racer) {
+    constructor(game, racer, name) {
         super(game, racer.x, racer.y);
 
         this.racer = racer;
+        this.name = name;
 
         // is being set in update and used in render
         this.world_mouse_coords = new Phaser.Point(0, 0);
@@ -36,6 +37,7 @@ class VectorAim extends Phaser.Graphics {
             this.x = this.racer.x;
             this.y = this.racer.y;
             this.game.state.states.RaceState.next_player();
+            return;
         } else {
             this.formerMouseDown = pointer.leftButton.isDown
         }
