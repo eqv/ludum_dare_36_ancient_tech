@@ -47,13 +47,8 @@ class VectorAim extends Phaser.Graphics {
         this.endFill();
 
         // line to future position
-        this.lineStyle(3, 0x00ff00);
+        this.lineStyle(1, 0x00ff00);
         this.moveTo(0,0);
-        this.lineTo(this.racer.velocity.x, this.racer.velocity.y);
-
-        // interactive mouse thingy, cap the line at the circle radius
-        this.lineStyle(1, 0xffff00);
-        this.moveTo(this.racer.velocity.x, this.racer.velocity.y);
         this.lineTo(this.racer.velocity.x + this.racer.acceleration.x,
                     this.racer.velocity.y + this.racer.acceleration.y);
     }
