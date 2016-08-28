@@ -5,7 +5,6 @@ class CheckpointInfo{
     this.points = new Set([])
   }
 }
-
 class PointInfo {
   constructor(x,y){
     this.on_track = false;
@@ -33,6 +32,7 @@ class TrackInfoExtractor {
     this.gather_checkpoints();
     this.gather_point_dists();
     this.gather_checkpoint_dists();
+	this.gather_finish_points();
     this.add_debug_map();
   }
 
@@ -137,6 +137,15 @@ class TrackInfoExtractor {
         if(neighbor_info.dist > dist){
           neighbor_info.dist = dist;
         }
+      }
+    }
+  }
+
+  gather_finish_points() {
+    this.finish_points = []
+    for (let [key, info] of this.points.entries()) {
+      if(info.on_finish) {
+        this.finish_points.push(info);
       }
     }
   }
