@@ -25,7 +25,8 @@ class RaceState extends Phaser.State {
         let aim = new VectorAim(this.game, racer);
 
         let airacer = new Racer(this.game, start.x, start.y, this.trackinfo);
-        let ai = new MonteCarloAI(airacer,this.trackinfo);
+        this.ai = new MonteCarloAI(airacer,this.trackinfo);
+        this.ai.decide(1000, 5);
     }
 
     find_random_starting_point() {
@@ -56,6 +57,7 @@ class RaceState extends Phaser.State {
 
     render(){
       this.trackinfo.debug_render();
+      this.ai.debug_render()
     }
 
 }

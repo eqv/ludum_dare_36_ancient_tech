@@ -106,7 +106,7 @@ class TrackInfoExtractor {
         }
       }
     }
-    this.checkpoints = [...this.checkpoints_to_info.values()].sort((a,b) => a.dist-b.dist);
+    this.checkpoints = [...this.checkpoints_to_info.values()].sort((a,b) => b.dist-a.dist);
   }
 
 
@@ -170,7 +170,7 @@ class TrackInfoExtractor {
   }
 
   get_map(x,y){
-    return this._map_data.getPixelRGB(x,y);
+    return this._map_data.getPixelRGB(Math.round(x),Math.round(y));
   }
 
   is_on_track(px){

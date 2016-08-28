@@ -7,7 +7,7 @@ class RacerPhysics {
         this.velocity     = new Phaser.Point(0, 0);
         this.acceleration = new Phaser.Point(0, 0);
         this.max_acceleration = 25;
-        this.last_checkpoint    = null;
+        this.last_checkpoint    = new Phaser.Point(x,y); //TODO fix
         this.last_checkpoint_id = null;
   }
 
@@ -70,6 +70,16 @@ class RacerPhysics {
           this.last_checkpoint_id = new_checkpoint_id;
       }
   }
+
+  fork(){
+    let res = new RacerPhysics(this.x, this.y, null, this.trackinfo)
+    res.velocity = this.velocity.clone();
+    res.acceleration = this.acceleration.clone();
+    if(this.last_checkpoint) res.last_checkpoint = this.last_checkpoint.clone();
+    res.last_checkpoint_id = this.last_checkpoint_id;
+    res.max_acceleration = this.max_acceleration;
+    return res
+  }
 }
 
 class Racer extends Phaser.Graphics {
@@ -84,14 +94,6 @@ class Racer extends Phaser.Graphics {
         this.game.world.add(this);
     }
 
-    fork_physics(){
-      let res = new Racer(this.game, this.x, this.y, this.trackinfo)
-      res.velocity = this.velocity.clone();
-      res.acceleration = this.acceleration.clone();
-      res.last_checkpoint = this.last_checkpoint.clone();
-      res.last_checkpoint_id = this.last_checkpoint_id();
-      res.max_acceleration = this.max_acceleration.clone();
-    }
 
     set_acceleration(accel){
       this.physics.set_acceleration(accel)
