@@ -7,7 +7,7 @@ class RacerPhysics {
         this.velocity     = new Phaser.Point(0, 0);
         this.acceleration = new Phaser.Point(0, 0);
         this.max_acceleration = 25;
-        this.last_checkpoint    = null;
+        this.last_checkpoint    = new Phaser.Point(x, y);
         this.last_checkpoint_id = null;
   }
 
@@ -49,14 +49,39 @@ class RacerPhysics {
           if (new_checkpoint == null) {
               let is_checkpoint = this.trackinfo.is_on_check_point(pixel);
               if (is_checkpoint) {
-                  new_checkpoint = new Phaser.Point(cur_pos.x, cur_pos.y);
-                  new_checkpoint_id = is_checkpoint;
+                  if (is_checkpoint != this.last_checkpoint_id) { // check only if this is a new checkpoint
+                      if (this.last_checkpoint_id != null) {
+                          let prev_checkpoint = this.trackinfo.checkpoints[this.trackinfo.checkpoints.length - 1].id;
+                          for (let cp of this.trackinfo.checkpoints) {
+                              if (cp.id == is_checkpoint && prev_checkpoint != this.last_checkpoint_id) {
+                                  glitched = true;
+                                  break;
+                              }
+                              else {
+                                  prev_checkpoint = cp.id;
+                              }
+                          }
+                      }
+                      else if (is_checkpoint != this.trackinfo.checkpoints[0].id) {
+                          glitched = true;
+                      }
+                  }
+                  if (!glitched) {
+                      new_checkpoint = new Phaser.Point(cur_pos.x, cur_pos.y);
+                      new_checkpoint_id = is_checkpoint;
+                  }
               }
           }
 
           // check for glitching
           if (!this.trackinfo.is_on_track(pixel) && this.last_checkpoint != null) {
-              if(this.racer) this.racer.previous_positions = [];
+              glitched = true;
+          }
+
+          if (glitched) {
+              if (this.racer) {
+                  this.racer.previous_positions = [];
+              }
               this.x = this.last_checkpoint.x;
               this.y = this.last_checkpoint.y;
               this.velocity.x = 0.0;
