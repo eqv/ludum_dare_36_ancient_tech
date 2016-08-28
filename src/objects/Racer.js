@@ -8,7 +8,8 @@ class Racer extends Phaser.Graphics {
         this.acceleration = new Phaser.Point(0, 0);
 
         this.previous_positions = [];
-        this.past_checkpoints   = [];
+        this.last_checkpoint    = null;
+        this.last_checkpoint_id = null;
 
         this.max_acceleration = 25;
         this.history_length = 7;
@@ -39,6 +40,7 @@ class Racer extends Phaser.Graphics {
         step.setMagnitude(1.0);
         let i;
         let new_checkpoint = null;
+        let new_checkpoint_id = null;
         let glitched = false;
         for (i = 0; i <= mag; i++) {
             if (i > mag) {
@@ -52,17 +54,19 @@ class Racer extends Phaser.Graphics {
             let pixel = this.trackinfo.get_map(Math.round(cur_pos.x), Math.round(cur_pos.y));
             
             // check if we went past a checkpoint
-            if (new_checkpoint == null && this.trackinfo.is_on_check_point(pixel)) {
-                new_checkpoint = [new Phaser.Point(cur_pos.x, cur_pos.y), this.previous_positions.length - 1];
-                console.log('checkpoint');
+            if (new_checkpoint == null) {
+                let is_checkpoint = this.trackinfo.is_on_check_point(pixel);
+                if (is_checkpoint) {
+                    new_checkpoint = new Phaser.Point(cur_pos.x, cur_pos.y);
+                    new_checkpoint_id = is_checkpoint;
+                }
             }
 
             // check for glitching
-            if (!this.trackinfo.is_on_track(pixel) && this.past_checkpoints.length > 0) {
-                let last_cp = this.past_checkpoints[this.past_checkpoints.length - 1];
-                this.previous_positions = this.previous_positions.slice(0, last_cp[1]);
-                this.x = last_cp[0].x;
-                this.y = last_cp[0].y;
+            if (!this.trackinfo.is_on_track(pixel) && this.last_checkpoint != null) {
+                this.previous_positions = [];
+                this.x = this.last_checkpoint.x;
+                this.y = this.last_checkpoint.y;
                 this.velocity.x = 0.0;
                 this.velocity.y = 0.0;
                 glitched = true;
@@ -70,7 +74,8 @@ class Racer extends Phaser.Graphics {
             }
         }
         if (!glitched && new_checkpoint != null) {
-            this.past_checkpoints.push(new_checkpoint);
+            this.last_checkpoint    = new_checkpoint;
+            this.last_checkpoint_id = new_checkpoint_id;
         }
     }
 
