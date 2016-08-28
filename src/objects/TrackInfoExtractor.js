@@ -87,15 +87,22 @@ class TrackInfoExtractor {
     let final_checkpoint = Math.max(...this.checkpoint_numbers);
     let closed_points = new Set([]);
     let open_points = new Set([...this.points.values()].filter(i =>i.checkpoint == final_checkpoint));
-    for(let info of open_points){info.score = 0;}
-    debugger;
+    let offsets = [[-1,-1], [-1,0], [-1,1],   [0,-1],[0,1],  [1,-1], [1,0], [1,1]];
+
+    for(let info of open_points){info.score = 5;}
+
     while(open_points.size > 0){
       let this_info = open_points.values().next().value;
       open_points.delete(this_info);
       closed_points.add(this_info);
-      for(let [x,y] of [[-1,-1], [-1,0], [-1,1],   [0,-1],[0,1],  [1,-1], [1,0], [1,1]]){
-        let neighbor_info = this.get_info(this_info.x+x, this_info.y+y);
-        if(!neighbor_info){continue;}
+      if(this_info.on_finish) continue;
+      for(let [x,y] of offsets){
+        let track_pos = this.world_to_track(new Phaser.Point(this_info.x, this_info.y));
+        track_pos.x += x;
+        track_pos.y += y;
+        let world_pos = this.track_to_world(track_pos)
+        let neighbor_info = this.get_info(world_pos.x, world_pos.y);
+        if( !neighbor_info ){continue;}
         if( !closed_points.has(neighbor_info) ){
            open_points.add(neighbor_info);
         }
@@ -150,9 +157,11 @@ class TrackInfoExtractor {
     let circ = new Phaser.Circle(0,0,5);
 
     for(let point of this.points.values()){
+      let info = this.get_info(point.x, point.y);
       circ.x = point.x;
       circ.y = point.y;
       circ.radius = 1; 
+      if(info) circ.radius = info.score/50
       this.game.debug.geom(circ);
     }
 
@@ -161,9 +170,7 @@ class TrackInfoExtractor {
     let info = this.get_info(track_pointer.x, track_pointer.y);
     circ.x = track_pointer.x;
     circ.y = track_pointer.y;
-    circ.radius = 10;
-    if(info)console.log(info)
-    this.game.debug.geom(circ);
+    circ.radius = 1;
   }
 
   add_debug_map(){
