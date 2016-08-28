@@ -16,6 +16,11 @@ class VectorAim extends Phaser.Graphics {
     }
 
     update() {
+        if (!this.alive) {
+            this.clear();
+            return;
+        }
+
         var pointer = this.game.input.mousePointer; //activePointer;
         this.world_mouse_coords.x = pointer.worldX;
         this.world_mouse_coords.y = pointer.worldY;
@@ -30,6 +35,7 @@ class VectorAim extends Phaser.Graphics {
             this.racer.move();
             this.x = this.racer.x;
             this.y = this.racer.y;
+            this.game.state.states.RaceState.next_player();
         } else {
             this.formerMouseDown = pointer.leftButton.isDown
         }
