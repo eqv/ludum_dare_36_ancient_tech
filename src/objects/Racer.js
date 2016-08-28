@@ -1,5 +1,5 @@
 class RacerPhysics {
-  constructor(x,y, racer, trackinfo){
+  constructor(x, y, racer, trackinfo) {
         this.x = x;
         this.y = y;
         this.lap_count = 0;
@@ -135,7 +135,7 @@ class Racer extends Phaser.Graphics {
     constructor(game, x, y, trackinfo) {
         super(game, x, y);
 
-        this.physics = new RacerPhysics(x,y, this, trackinfo)
+        this.physics = new RacerPhysics(x, y, this, trackinfo)
         this.previous_positions = [];
         this.history_length = 7;
 
@@ -143,13 +143,11 @@ class Racer extends Phaser.Graphics {
         this.game.world.add(this);
     }
 
-
-
-    set_acceleration(accel){
+    set_acceleration(accel) {
       this.physics.set_acceleration(accel)
     }
 
-    move(){
+    move() {
       let prev_pos = new Phaser.Point(this.physics.x, this.physics.y);
       this.previous_positions.push(prev_pos);
       this.physics.move()
@@ -179,19 +177,19 @@ class Racer extends Phaser.Graphics {
 
             // paint line path
             for (var i = this.previous_positions.length; i > last_idx; i--) {
-                var point_x = this.previous_positions[i-1].x-this.x;
-                var point_y = this.previous_positions[i-1].y-this.y;
+                var point_x = this.previous_positions[i-1].x - this.x;
+                var point_y = this.previous_positions[i-1].y - this.y;
 
                 this.lineTo(point_x, point_y);
             }
 
             // paint points on the path
             for (var i = this.previous_positions.length; i > last_idx; i--) {
-                var point_x = this.previous_positions[i-1].x-this.x;
-                var point_y = this.previous_positions[i-1].y-this.y;
+                var point_x = this.previous_positions[i-1].x - this.x;
+                var point_y = this.previous_positions[i-1].y - this.y;
 
                 this.beginFill(0x00ff00);
-                this.drawRect(point_x-2, point_y-2, 4, 4);
+                this.drawRect(point_x - 2, point_y - 2, 4, 4);
                 this.endFill();
             }
         }
