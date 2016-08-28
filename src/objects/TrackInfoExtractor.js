@@ -5,6 +5,7 @@ class PointInfo {
     this.checkpoint = undefined;
     this.x = x;
     this.y = y;
+    this.score = Infinity;
   }
 
   key(){
@@ -26,7 +27,7 @@ class TrackInfoExtractor {
     this.add_debug_map();
   }
 
-  key(x,y){return ""+x+","+y;}
+  point_key(x,y){return ""+x+","+y;}
 
   get_map_data(name){
     let map_image = this.game.cache.getImage(name);
@@ -45,6 +46,16 @@ class TrackInfoExtractor {
     this.matrix_track_to_world=  new Phaser.Matrix( base_1.x, base_1.y, base_2.x, base_2.y, 0, 0 );
   }
 
+  get_info(x,y){
+    let pt = this.snap_to_track(new Phaser.Point(x,y));
+    return this.points.get( this.point_key(pt.x, pt.y) );
+  }
+
+  set_info(x,y, info){
+    let pt = this.snap_to_track(new Phaser.Point(x,y));
+    return this.points.set( this.point_key(pt.x, pt.y), info);
+  }
+
   gather_viable_points(){
     this.points = new Map([]);
     for (let x =0; x <= this._track_size.x; x++) {
@@ -52,13 +63,13 @@ class TrackInfoExtractor {
         let px = this.get_map(x,y);
         let pt = this.snap_to_track(new Phaser.Point(x,y))
         if(!this.is_on_track(this.get_map(pt.x, pt.y))){continue;}
-        let info = this.points.get(""+pt.x+","+pt.y);
+        let info = this.get_info(pt.x, pt.y);
         if(!info){info = new PointInfo(pt.x, pt.y) };
         if(this.is_on_track(px)){info.on_track = true;}
         if(this.is_on_finish_line(px)){info.on_finish = true;}
         let checkpoint = this.is_on_check_point(px);
         if(checkpoint){info.checkpoint = checkpoint;}
-        this.points.set(info.key(), info);
+        this.set_info(pt.x, pt.y, info);
         }
       }
   }
@@ -74,12 +85,24 @@ class TrackInfoExtractor {
 
   gather_point_scores(){
     let final_checkpoint = Math.max(...this.checkpoint_numbers);
-    let seen_points = [...this.points.values()].filter(i =>i.checkpoint);
-    let scores = new Map([])
-    for(let p of seen_points){scores[p.key] = 0;}
-    while(p = seen_points.pop()){
+    let closed_points = new Set([]);
+    let open_points = new Set([...this.points.values()].filter(i =>i.checkpoint == final_checkpoint));
+    for(let info of open_points){info.score = 0;}
+    debugger;
+    while(open_points.size > 0){
+      let this_info = open_points.values().next().value;
+      open_points.delete(this_info);
+      closed_points.add(this_info);
       for(let [x,y] of [[-1,-1], [-1,0], [-1,1],   [0,-1],[0,1],  [1,-1], [1,0], [1,1]]){
-        
+        let neighbor_info = this.get_info(this_info.x+x, this_info.y+y);
+        if(!neighbor_info){continue;}
+        if( !closed_points.has(neighbor_info) ){
+           open_points.add(neighbor_info);
+        }
+        let dist = Math.sqrt(x*x+y*y)+this_info.score;
+        if(neighbor_info.score > dist){
+          neighbor_info.score = dist;
+        }
       }
     }
   }
@@ -123,21 +146,23 @@ class TrackInfoExtractor {
     }
   }
 
-
   debug_render(){
     let circ = new Phaser.Circle(0,0,5);
 
     for(let point of this.points.values()){
       circ.x = point.x;
       circ.y = point.y;
+      circ.radius = 1; 
       this.game.debug.geom(circ);
     }
 
     let pointer = this.game.input.mousePointer; //activePointer;
     let track_pointer = this.snap_to_track(new Phaser.Point(pointer.worldX, pointer.worldY));
+    let info = this.get_info(track_pointer.x, track_pointer.y);
     circ.x = track_pointer.x;
     circ.y = track_pointer.y;
     circ.radius = 10;
+    if(info)console.log(info)
     this.game.debug.geom(circ);
   }
 
