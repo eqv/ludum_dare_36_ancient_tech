@@ -1,3 +1,17 @@
+class PointInfo {
+  constructor(x,y){
+    this.on_track = false;
+    this.on_finish = false;
+    this.checkpoint = undefined;
+    this.x = x;
+    this.y = y;
+  }
+
+  key(){
+    ""+this.x+","+this.y
+  }
+}
+
 class TrackInfoExtractor {
 
 	constructor(game, track) {
@@ -6,16 +20,13 @@ class TrackInfoExtractor {
     this.num_points = track.num_points;
     this.get_map_data(track.name);
     this.get_matrix();
-
-    if(!track.buffer) {
-      this.gather_viable_points();
-      console.log(JSON.stringify(this.points))
-    } else {
-      this.points = track.buffer.points;
-    }
-
+    this.gather_viable_points();
+    this.gather_checkpoints();
+    this.gather_point_scores();
     this.add_debug_map();
   }
+
+  key(x,y){return ""+x+","+y;}
 
   get_map_data(name){
     let map_image = this.game.cache.getImage(name);
@@ -42,16 +53,34 @@ class TrackInfoExtractor {
         let pt = this.snap_to_track(new Phaser.Point(x,y))
         if(!this.is_on_track(this.get_map(pt.x, pt.y))){continue;}
         let info = this.points.get(""+pt.x+","+pt.y);
-        if(!info){info = {x:pt.x, y:pt.y};}
+        if(!info){info = new PointInfo(pt.x, pt.y) };
         if(this.is_on_track(px)){info.on_track = true;}
         if(this.is_on_finish_line(px)){info.on_finish = true;}
         let checkpoint = this.is_on_check_point(px);
         if(checkpoint){info.checkpoint = checkpoint;}
-        this.points.set(""+pt.x+","+pt.y, info);
+        this.points.set(info.key(), info);
         }
       }
-    for (var [key, value] of this.points.entries()) {
-      console.log(key + " = " + value);
+  }
+
+  gather_checkpoints(){
+    this.checkpoint_numbers =new Set([]);
+    for (let [key, info] of this.points.entries()) {
+      if(info.checkpoint){
+        this.checkpoint_numbers.add(info.checkpoint);
+      }
+    }
+  }
+
+  gather_point_scores(){
+    let final_checkpoint = Math.max(...this.checkpoint_numbers);
+    let seen_points = [...this.points.values()].filter(i =>i.checkpoint);
+    let scores = new Map([])
+    for(let p of seen_points){scores[p.key] = 0;}
+    while(p = seen_points.pop()){
+      for(let [x,y] of [[-1,-1], [-1,0], [-1,1],   [0,-1],[0,1],  [1,-1], [1,0], [1,1]]){
+        
+      }
     }
   }
 
@@ -87,7 +116,7 @@ class TrackInfoExtractor {
   }
 
   is_on_check_point(px){
-    if(px.r == 0xf0){
+    if(px.r == 0xa0){
       return px.g;
     } else {
       return false
