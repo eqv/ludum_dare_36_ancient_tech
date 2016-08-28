@@ -24,6 +24,7 @@ class TrackInfoExtractor {
     this.gather_viable_points();
     this.gather_checkpoints();
     this.gather_point_scores();
+    this.gather_finish_points();
     this.add_debug_map();
   }
 
@@ -110,6 +111,15 @@ class TrackInfoExtractor {
         if(neighbor_info.score > dist){
           neighbor_info.score = dist;
         }
+      }
+    }
+  }
+
+  gather_finish_points() {
+    this.finish_points = []
+    for (let [key, info] of this.points.entries()) {
+      if(info.on_finish) {
+        this.finish_points.push(info);
       }
     }
   }
