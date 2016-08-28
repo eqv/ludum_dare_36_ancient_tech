@@ -39,11 +39,10 @@ class RaceState extends Phaser.State {
             this.players.push(aim);
         }
         else {
-            let airacer = new Racer(this.game, start.x, start.y, this.trackinfo);
-            this.ai = new MonteCarloAI(this.game, airacer,this.trackinfo);
-            this.ai.decide(100,5);
-            this.ai.alive = false;
-            this.players.push(this.ai, "The AI");
+          let airacer = new Racer(this.game, start.x, start.y, this.trackinfo);
+          this.ai = new MonteCarloAI(this.game, airacer,this.trackinfo);
+          this.ai.alive = false;
+          this.players.push(this.ai, "The AI");
         }
     }
 
