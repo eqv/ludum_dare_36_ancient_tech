@@ -11,6 +11,7 @@ class Racer extends Phaser.Graphics {
         this.past_checkpoints   = [];
 
         this.max_acceleration = 25;
+        this.history_length = 7;
 
         this.render();
         this.game.world.add(this);
@@ -89,9 +90,10 @@ class Racer extends Phaser.Graphics {
         this.lineStyle(2, 0xffffff);
         if (this.previous_positions.length >= 1) {
             this.moveTo(0, 0);
+            let last_idx = Math.max(this.previous_positions.length - this.history_length, 0);
 
             // paint line path
-            for (var i = this.previous_positions.length; i > 0; i--) {
+            for (var i = this.previous_positions.length; i > last_idx; i--) {
                 var point_x = this.previous_positions[i-1].x-this.x;
                 var point_y = this.previous_positions[i-1].y-this.y;
 
@@ -99,7 +101,7 @@ class Racer extends Phaser.Graphics {
             }
 
             // paint points on the path
-            for (var i = this.previous_positions.length; i > 0; i--) {
+            for (var i = this.previous_positions.length; i > last_idx; i--) {
                 var point_x = this.previous_positions[i-1].x-this.x;
                 var point_y = this.previous_positions[i-1].y-this.y;
 
