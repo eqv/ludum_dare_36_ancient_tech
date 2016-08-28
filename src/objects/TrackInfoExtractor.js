@@ -87,7 +87,7 @@ class TrackInfoExtractor {
   }
 
   is_on_check_point(px){
-    if(px.r == 0xf0){
+    if(px.r == 0xa0){
       return px.g;
     } else {
       return false
