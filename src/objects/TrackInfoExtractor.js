@@ -32,7 +32,7 @@ class TrackInfoExtractor {
     this.gather_checkpoints();
     this.gather_point_dists();
     this.gather_checkpoint_dists();
-	this.gather_finish_points();
+    this.gather_finish_points();
     this.add_debug_map();
   }
 

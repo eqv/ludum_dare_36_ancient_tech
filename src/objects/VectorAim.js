@@ -20,8 +20,8 @@ class VectorAim extends Phaser.Graphics {
         this.world_mouse_coords.x = pointer.worldX;
         this.world_mouse_coords.y = pointer.worldY;
 
-        let new_accel = new Phaser.Point(this.world_mouse_coords.x - (this.x + this.racer.velocity.x),
-                                         this.world_mouse_coords.y - (this.y + this.racer.velocity.y));
+        let new_accel = new Phaser.Point(this.world_mouse_coords.x - (this.x + this.racer.physics.velocity.x),
+                                         this.world_mouse_coords.y - (this.y + this.racer.physics.velocity.y));
         this.racer.set_acceleration(new_accel);
 
         //TODO: this method sucks. It's not always registered :(
@@ -43,14 +43,14 @@ class VectorAim extends Phaser.Graphics {
         // circle around future position
         this.lineStyle(1, 0xffffff);
         this.beginFill(0xff0000, 0.3);
-        this.drawCircle(this.racer.velocity.x, this.racer.velocity.y, this.racer.max_acceleration*2);
+        this.drawCircle(this.racer.physics.velocity.x, this.racer.physics.velocity.y, this.racer.physics.max_acceleration*2);
         this.endFill();
 
         // line to future position
         this.lineStyle(1, 0x00ff00);
         this.moveTo(0,0);
-        this.lineTo(this.racer.velocity.x + this.racer.acceleration.x,
-                    this.racer.velocity.y + this.racer.acceleration.y);
+        this.lineTo(this.racer.physics.velocity.x + this.racer.physics.acceleration.x,
+                    this.racer.physics.velocity.y + this.racer.physics.acceleration.y);
     }
 }
 

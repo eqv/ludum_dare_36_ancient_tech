@@ -1,6 +1,7 @@
 import Racer from 'objects/Racer';
 import TrackInfoExtractor from 'objects/TrackInfoExtractor';
 import VectorAim from 'objects/VectorAim';
+import MonteCarloAI from 'objects/MonteCarloAI.js';
 
 let tracks = [
   {
@@ -22,6 +23,9 @@ class RaceState extends Phaser.State {
         let start = this.find_random_starting_point();
         let racer = new Racer(this.game, start.x, start.y, this.trackinfo);
         let aim = new VectorAim(this.game, racer);
+
+        let airacer = new Racer(this.game, start.x, start.y, this.trackinfo);
+        let ai = new MonteCarloAI(airacer,this.trackinfo);
     }
 
     find_random_starting_point() {
