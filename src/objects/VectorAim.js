@@ -1,8 +1,10 @@
 class VectorAim extends Phaser.Graphics {
-    constructor(game, x, y) {
+    constructor(game, trackinfo, x, y) {
         super(game, x, y);
+        this.trackinfo = trackinfo;
 
         this.previous_positions = [];
+        this.past_checkpoints = [];
         this.velocity = new Phaser.Point(0, 0);
         this.velocity_change = new Phaser.Point(0, 0);
 
@@ -37,13 +39,40 @@ class VectorAim extends Phaser.Graphics {
             console.log("CLICK!")
             this.formerMouseDown = false;
 
-            this.previous_positions.push(new Phaser.Point(this.x, this.y));
+            let prev_pos = new Phaser.Point(this.x, this.y);
+            this.previous_positions.push(prev_pos);
 
             this.velocity.x += this.velocity_change.x;
             this.velocity.y += this.velocity_change.y;
 
             this.x += this.velocity.x;
             this.y += this.velocity.y;
+
+            let pixel = this.trackinfo.get_map(Math.round(this.x), Math.round(this.y));
+            if (!this.trackinfo.is_on_track(pixel) && this.past_checkpoints.length > 0) {
+                let last_cp = this.past_checkpoints[this.past_checkpoints.length - 1];
+                this.previous_positions = this.previous_positions.slice(0, last_cp[1]);
+                this.x = last_cp[0].x;
+                this.y = last_cp[0].y;
+                this.velocity.x = 0.0;
+                this.velocity.y = 0.0;
+            }
+            else {
+                let cur_pos = new Phaser.Point(prev_pos.x, prev_pos.y);
+                let mag = this.velocity.getMagnitude();
+                let step = new Phaser.Point(this.velocity.x, this.velocity.y);
+                step.setMagnitude(1.0);
+                let i;
+                for (i = 0; i < mag; i++) {
+                    cur_pos.x += step.x;
+                    cur_pos.y += step.y;
+                    let pixel = this.trackinfo.get_map(Math.round(cur_pos.x), Math.round(cur_pos.y));
+                    if (this.trackinfo.is_on_check_point(pixel)) {
+                        this.past_checkpoints.push([cur_pos, this.previous_positions.length - 1]);
+                        break;
+                    }
+                }
+            }
         } else {
             this.formerMouseDown = pointer.leftButton.isDown
         }
