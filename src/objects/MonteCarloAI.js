@@ -18,7 +18,7 @@ class DecisionPath {
 
 class MonteCarloAI extends Phaser.Graphics{
 
-  constructor(game, racer, trackinfo){
+  constructor(game, racer, trackinfo, name){
     super(game, 0, 0);
     this.racer = racer;
     this.trackinfo = trackinfo;
@@ -172,7 +172,7 @@ class MonteCarloAI extends Phaser.Graphics{
 
   update(){
     if (!this.alive) return;
-    if (this.rounds_thought > 100){
+    if (this.rounds_thought > 20){
       this.racer.physics.acceleration = this.best_path.accel()
       this.racer.move()
       this.game.state.states.RaceState.next_player();
